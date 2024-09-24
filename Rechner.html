@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schwangerschaftsrechner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            background-color: #e7f3fe;
+            border: 1px solid #3498db;
+            padding: 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Schwangerschaftsrechner</h1>
+        <form id="pregnancyCalculator">
+            <h2>Berechne deinen Geburtstermin</h2>
+            <label for="lastPeriod">Erster Tag deiner letzten Periode:</label>
+            <input type="date" id="lastPeriod" required>
+            <br><br>
+            <label for="cycleLength">Durchschnittliche Zykluslänge (in Tagen):</label>
+            <input type="number" id="cycleLength" min="21" max="40" value="28" required>
+            <br><br>
+            <button type="submit">Jetzt herausfinden!</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Datum-Einschränkungen setzen
+        var today = new Date();
+        var tenMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 10, today.getDate());
+        
+        document.getElementById('lastPeriod').max = today.toISOString().split('T')[0];
+        document.getElementById('lastPeriod').min = tenMonthsAgo.toISOString().split('T')[0];
+
+        document.getElementById('pregnancyCalculator').onsubmit = function(e) {
+            e.preventDefault();
+            var lastPeriod = new Date(document.getElementById('lastPeriod').value);
+            var cycleLength = parseInt(document.getElementById('cycleLength').value);
+            
+            // Überprüfung des Datums
+            if (lastPeriod > today || lastPeriod < tenMonthsAgo) {
+                alert("Bitte wähle ein Datum zwischen heute und vor 10 Monaten."); // Länger als 10 Monate?
+                return;
+            }
+            
+            // Berechnung des Ovulationstages basierend auf der Zykluslänge
+            var ovulationDay = new Date(lastPeriod.getTime() + (cycleLength - 14) * 24 * 60 * 60 * 1000);
+            
+            // Berechnung des voraussichtlichen Geburtstermins (266 Tage nach der Ovulation)
+            var dueDate = new Date(ovulationDay.getTime() + 266 * 24 * 60 * 60 * 1000);
+            
+            var weeksPregnant = Math.floor((today - lastPeriod) / (7 * 24 * 60 * 60 * 1000));
+            var daysPregnant = Math.floor((today - lastPeriod) / (24 * 60 * 60 * 1000)) % 7;
+
+            var result = "<strong>Dein voraussichtlicher Geburtstermin ist:</strong> " + dueDate.toLocaleDateString('de-DE') + "<br><br>";
+            result += "<strong>Du bist aktuell in der " + weeksPregnant + ". Schwangerschaftswoche";
+            if (daysPregnant > 0) {
+                result += " und " + daysPregnant + " Tag(en)";
+            }
+            result += ".</strong>";
+
+            document.getElementById('result').innerHTML = result;
+        };
+    </script>
+</body>
+</html>
