@@ -71,6 +71,21 @@
             background-color: #fff3e0;
             border: 1px solid #ff9800;
         }
+        #pregnancyWeek {
+            background-color: #e8f5e9;
+            border: 1px solid #4CAF50;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        #maternityInfo {
+            background-color: #fff3e0;
+            border: 1px solid #ff9800;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -87,6 +102,8 @@
             <button type="submit">Jetzt herausfinden!</button>
         </form>
         <div id="result"></div>
+        <div id="pregnancyWeek" class="development-box"></div>
+        <div id="maternityInfo" class="development-box"></div>
         <div id="currentWeek" class="development-box"></div>
         <div id="nextWeek" class="development-box"></div>
     </div>
@@ -162,24 +179,27 @@
             // Berechnung des Mutterschutzbeginns (8 Wochen vor dem Geburtstermin)
             var maternityLeave = new Date(dueDate.getTime() - (8 * 7 * 24 * 60 * 60 * 1000));
 
-            var result = "<strong>Dein voraussichtlicher Geburtstermin ist:</strong> " +
-                        dueDate.toLocaleDateString('de-DE') + "<br><br>";
-            result += "<strong>Du bist aktuell in der " + weeksPregnant + ". Schwangerschaftswoche";
+            // Im onsubmit Event Handler:
+            var result = dueDate.toLocaleDateString('de-DE');
+            document.getElementById('result').innerHTML = result;
+
+            var pregnancyWeekInfo = "<strong>Du bist aktuell in der " + weeksPregnant + ". Schwangerschaftswoche";
             if (daysPregnant > 0) {
-                result += " und " + daysPregnant + " Tag(en)";
+                pregnancyWeekInfo += " und " + daysPregnant + " Tag(en)";
             }
-            result += ".</strong><br><br>";
-            result += "<strong>Dein Mutterschutz beginnt am:</strong> " +
-                    maternityLeave.toLocaleDateString('de-DE');
+            pregnancyWeekInfo += ".</strong>";
+            document.getElementById('pregnancyWeek').innerHTML = pregnancyWeekInfo;
+
+            var maternityInfo = "<strong>Dein Mutterschutz beginnt am:</strong> " +
+                                maternityLeave.toLocaleDateString('de-DE');
+            document.getElementById('maternityInfo').innerHTML = maternityInfo;
 
             document.getElementById('result').innerHTML = result;
 
 
             // Entwicklungsinformationen anzeigen
-            var currentWeekInfo = "<h3>In dieser Woche:</h3>" +
-                                (weeklyDevelopment[weeksPregnant] || "Keine Information verfügbar.");
-            var nextWeekInfo = "<h3>In der nächsten Woche:</h3>" +
-                              (weeklyDevelopment[weeksPregnant + 1] || "Keine Information verfügbar.");
+            var currentWeekInfo = (weeklyDevelopment[weeksPregnant] || "Keine Information verfügbar.");
+            var nextWeekInfo = (weeklyDevelopment[weeksPregnant + 1] || "Keine Information verfügbar.");
 
             document.getElementById('currentWeek').innerHTML = currentWeekInfo;
             document.getElementById('nextWeek').innerHTML = nextWeekInfo;
