@@ -13,14 +13,14 @@
             background-color: #f4f4f4;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             background-color: #fff;
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        h1, h2 {
+        h1, h2, h3 {
             color: #333;
             text-align: center;
         }
@@ -56,6 +56,20 @@
             border: 1px solid #3498db;
             padding: 15px;
             border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .development-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        #currentWeek {
+            background-color: #e8f5e9;
+            border: 1px solid #4CAF50;
+        }
+        #nextWeek {
+            background-color: #fff3e0;
+            border: 1px solid #ff9800;
         }
     </style>
 </head>
@@ -73,13 +87,59 @@
             <button type="submit">Jetzt herausfinden!</button>
         </form>
         <div id="result"></div>
+        <div id="currentWeek" class="development-box"></div>
+        <div id="nextWeek" class="development-box"></div>
     </div>
 
     <script>
+        // Entwicklungsinformationen nach Schwangerschaftswoche
+        const weeklyDevelopment = {
+            1: "Die Befruchtung findet statt.",
+            2: "Der Embryo nistet sich in der Gebärmutter ein.",
+            3: "Die ersten Organe beginnen sich zu entwickeln.",
+            4: "Das Herz beginnt zu schlagen.",
+            5: "Die Wirbelsäule entwickelt sich.",
+            6: "Die Augen und Ohren beginnen sich zu formen.",
+            7: "Die Arme und Beine entwickeln sich.",
+            8: "Die Finger und Zehen bilden sich.",
+            9: "Die äußeren Geschlechtsmerkmale entwickeln sich.",
+            10: "Die Fingerabdrücke beginnen sich zu entwickeln.",
+            11: "Das Baby kann bereits Grimassen schneiden.",
+            12: "Die Nägel beginnen zu wachsen.",
+            13: "Die Stimmbänder entwickeln sich.",
+            14: "Das Baby macht erste Atembewegungen.",
+            15: "Die Knochen werden härter.",
+            16: "Das Baby kann den Kopf aufrecht halten.",
+            17: "Fettgewebe beginnt sich zu bilden.",
+            18: "Das Baby kann die Ohren bewegen.",
+            19: "Die Bewegungen werden kräftiger.",
+            20: "Das Immunsystem entwickelt sich weiter.",
+            21: "Die Augenlider öffnen sich.",
+            22: "Das Baby reagiert auf Geräusche.",
+            23: "Die Lungen entwickeln sich weiter.",
+            24: "Die Geschmacksknospen bilden sich.",
+            25: "Das Baby hat einen Schlaf-Wach-Rhythmus.",
+            26: "Die Augen können sich öffnen und schließen.",
+            27: "Das Baby kann träumen.",
+            28: "Die Lungen produzieren Surfactant.",
+            29: "Das Gehirn wächst sehr schnell.",
+            30: "Das Baby legt an Gewicht zu.",
+            31: "Die Bewegungen werden koordinierter.",
+            32: "Die Fingernägel erreichen die Fingerspitzen.",
+            33: "Die Knochen verhärten sich weiter.",
+            34: "Das Immunsystem wird stärker.",
+            35: "Das Baby nimmt täglich zu.",
+            36: "Die Lungen sind fast ausgereift.",
+            37: "Das Baby ist nun termingerecht.",
+            38: "Die Organe sind voll entwickelt.",
+            39: "Das Baby bereitet sich auf die Geburt vor.",
+            40: "Das Baby kann jeden Moment kommen."
+        };
+
         // Datum-Einschränkungen setzen
         var today = new Date();
         var tenMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 10, today.getDate());
-        
+
         document.getElementById('lastPeriod').max = today.toISOString().split('T')[0];
         document.getElementById('lastPeriod').min = tenMonthsAgo.toISOString().split('T')[0];
 
@@ -87,30 +147,42 @@
             e.preventDefault();
             var lastPeriod = new Date(document.getElementById('lastPeriod').value);
             var cycleLength = parseInt(document.getElementById('cycleLength').value);
-            
-            // Überprüfung des Datums
+
             if (lastPeriod > today || lastPeriod < tenMonthsAgo) {
-                alert("Bitte wähle ein Datum zwischen heute und vor 10 Monaten."); // Länger als 10 Monate?
+                alert("Bitte wähle ein Datum zwischen heute und vor 10 Monaten.");
                 return;
             }
-            
-            // Berechnung des Ovulationstages basierend auf der Zykluslänge
+
             var ovulationDay = new Date(lastPeriod.getTime() + (cycleLength - 14) * 24 * 60 * 60 * 1000);
-            
-            // Berechnung des voraussichtlichen Geburtstermins (266 Tage nach der Ovulation)
             var dueDate = new Date(ovulationDay.getTime() + 266 * 24 * 60 * 60 * 1000);
-            
+
             var weeksPregnant = Math.floor((today - lastPeriod) / (7 * 24 * 60 * 60 * 1000));
             var daysPregnant = Math.floor((today - lastPeriod) / (24 * 60 * 60 * 1000)) % 7;
 
-            var result = "<strong>Dein voraussichtlicher Geburtstermin ist:</strong> " + dueDate.toLocaleDateString('de-DE') + "<br><br>";
+            // Berechnung des Mutterschutzbeginns (8 Wochen vor dem Geburtstermin)
+            var maternityLeave = new Date(dueDate.getTime() - (8 * 7 * 24 * 60 * 60 * 1000));
+
+            var result = "<strong>Dein voraussichtlicher Geburtstermin ist:</strong> " +
+                        dueDate.toLocaleDateString('de-DE') + "<br><br>";
             result += "<strong>Du bist aktuell in der " + weeksPregnant + ". Schwangerschaftswoche";
             if (daysPregnant > 0) {
                 result += " und " + daysPregnant + " Tag(en)";
             }
-            result += ".</strong>";
+            result += ".</strong><br><br>";
+            result += "<strong>Dein Mutterschutz beginnt am:</strong> " +
+                    maternityLeave.toLocaleDateString('de-DE');
 
             document.getElementById('result').innerHTML = result;
+
+
+            // Entwicklungsinformationen anzeigen
+            var currentWeekInfo = "<h3>In dieser Woche:</h3>" +
+                                (weeklyDevelopment[weeksPregnant] || "Keine Information verfügbar.");
+            var nextWeekInfo = "<h3>In der nächsten Woche:</h3>" +
+                              (weeklyDevelopment[weeksPregnant + 1] || "Keine Information verfügbar.");
+
+            document.getElementById('currentWeek').innerHTML = currentWeekInfo;
+            document.getElementById('nextWeek').innerHTML = nextWeekInfo;
         };
     </script>
 </body>
